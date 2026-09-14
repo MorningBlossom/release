@@ -1,0 +1,7 @@
+bin/
+vendor/
+*.md
+.DS_Store
+pkg/
+.idea
+.env

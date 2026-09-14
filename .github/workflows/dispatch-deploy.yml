@@ -1,0 +1,65 @@
+name: Deploy via upstream dispatch
+on:
+  repository_dispatch:
+    types: [deploy-service]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: true
+      image:
+        description: "image path"
+        required: true
+      tag:
+        description: "image tag"
+        required: true
+        default: "latest"
+
+jobs:
+  deploy-tag:
+    name: Rollout New Image Tag
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      AUTH_SERVICE_SECRETS: ${{ secrets.AUTH_SERVICE_SECRETS }}
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Payload Inputs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "SERVICE=${{ inputs.service }}" >> $GITHUB_ENV
+            echo "IMAGE=${{ inputs.image }}" >> $GITHUB_ENV
+            echo "TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+          else
+            echo "SERVICE=${{ github.event.client_payload.service }}" >> $GITHUB_ENV
+            echo "IMAGE=${{ github.event.client_payload.image }}" >> $GITHUB_ENV
+            echo "TAG=${{ github.event.client_payload.tag }}" >> $GITHUB_ENV
+          fi
+
+      - name: Generate Service Secrets
+        uses: ./.github/actions/generate-secrets
+        with:
+          service: ${{ env.SERVICE }}
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v3
+
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Authenticate to OKE
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Patch Image & Rollout
+        run: |
+          cd apps/${{ env.SERVICE }}/overlays/prod
+          kustomize edit set image ${{ env.SERVICE }}-image=${{ env.IMAGE }}:${{ env.TAG }}
+          kubectl apply -k .
+          kubectl rollout status deployment/${{ env.SERVICE }} -n production --timeout=180s

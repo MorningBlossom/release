@@ -1,0 +1,65 @@
+name: Deploy on Infra PR Merge
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/**'
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            auth-service: 'apps/auth-service/**'
+
+  deploy:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.services != '[]' && needs.detect-changes.outputs.services != '' }}
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      matrix:
+        service: ${{ fromJSON(needs.detect-changes.outputs.services) }}
+      fail-fast: false
+
+    env:
+      AUTH_SERVICE_SECRETS: ${{ secrets.AUTH_SERVICE_SECRETS }}
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate Service Secrets
+        uses: ./.github/actions/generate-secrets
+        with:
+          service: ${{ matrix.service }}
+
+      - name: Detect Changes Service
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            auth-service: 'apps/auth-service/**'
+
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Authenticate to OKE
+        run: |
+            mkdir -p ~/.kube
+            echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+            chmod 600 ~/.kube/config
+            
+      # Deploy each service that has changes in this merge
+      - name: Apply Deployments
+        run: |
+          run: |
+          cd apps/${{ matrix.service }}/overlays/prod
+          kubectl apply -k .
+          kubectl rollout status deployment/${{ matrix.service }} -n production --timeout=180s

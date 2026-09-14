@@ -1,0 +1,34 @@
+name: "Generate Service Secrets"
+description: "Dynamically populates secret.env for the targeted microservice"
+
+inputs:
+  service:
+    description: "The microservice name (e.g. auth-service)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Write Secret File
+      shell: bash
+      env:
+        SERVICE: ${{ inputs.service }}
+        AUTH_SECRETS: ${{ env.AUTH_SERVICE_SECRETS }}
+
+      run: |
+        OVERLAY_DIR="apps/${SERVICE}/overlays/prod"
+        mkdir -p "$OVERLAY_DIR"
+        TARGET_FILE="$OVERLAY_DIR/secret.env"
+
+        case "$SERVICE" in
+          auth-service)
+            echo "$AUTH_SECRETS" > "$TARGET_FILE"
+            ;;
+          *)
+            echo "Unknown service: $SERVICE"
+            exit 1
+            ;;
+        esac
+
+        chmod 600 "$TARGET_FILE"
+        echo "Successfully generated $TARGET_FILE"
