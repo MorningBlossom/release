@@ -16,7 +16,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: auth-service
-          image: ghcr.io/morningblossom/auth-service/service:latest
+          image: auth-service-image
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

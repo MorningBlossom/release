@@ -3,6 +3,12 @@ kind: Kustomization
 namespace: production
 resources:
   - ../../base
+
+images:
+  - name: auth-service-image
+    newName: ghcr.io/morningblossom/auth-service/service
+    newTag: latest
+
 secretGenerator:
   - name: auth-service-secret
     envs:
