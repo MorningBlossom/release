@@ -59,7 +59,15 @@ jobs:
 
       - name: Patch Image & Rollout
         run: |
+          # 1. Force the image URL to strictly lowercase
+          IMAGE_LOWER=$(echo "${{ env.IMAGE }}" | tr '[:upper:]' '[:lower:]')
+
           cd apps/${{ env.SERVICE }}/overlays/prod
-          kustomize edit set image ${{ env.SERVICE }}-image=${{ env.IMAGE }}:${{ env.TAG }}
+
+          echo "Applying image: ${IMAGE_LOWER}:${{ env.TAG }}"
+
+          # 2. Patch using the lowercase image reference
+          kustomize edit set image ${{ env.SERVICE }}-image=${IMAGE_LOWER}:${{ env.TAG }}
+
           kubectl apply -k .
           kubectl rollout status deployment/${{ env.SERVICE }} -n production --timeout=180s
