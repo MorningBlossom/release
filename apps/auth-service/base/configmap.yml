@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: auth-service-config
 data:
-  DB_HOST: "db.nrlvcvkfmdwiizeberjk.supabase.co"
+  DB_HOST: "aws-0-ap-south-1.pooler.supabase.com"
   DB_PORT: "5432"
-  DB_USER: "postgres"
+  DB_USER: "postgres.nrlvcvkfmdwiizeberjk"
   DB_NAME: "postgres"
