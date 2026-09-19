@@ -6,7 +6,6 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   tls:
@@ -19,6 +18,13 @@ spec:
         paths:
           - path: /auth(/|$)(.*)
             pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 80
+          - path: /query
+            pathType: Prefix
             backend:
               service:
                 name: auth-service
