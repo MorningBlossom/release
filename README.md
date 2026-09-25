@@ -137,12 +137,12 @@ apps/
 
 Suppose we want to add a new service:
 
-`orders-service`
+`order-service`
 
 The recommended structure is:
 ```
 apps/
-└── orders-service/
+└── order-service/
     ├── base/
     │   ├── deployment.yaml
     │   ├── service.yaml
@@ -152,7 +152,6 @@ apps/
     └── overlays/
         └── prod/
             ├── kustomization.yaml
-            └── secret.env
 ```
 
 ### Follow the steps below.
@@ -177,7 +176,7 @@ env:
 ```
 
 ### Step-2
-Inside `.github/workflows/dispatch-deploy.yaml` file add env
+Inside `.github/workflows/dispatch-deploy.yml` file add env
 
 ```
 env:
@@ -201,7 +200,7 @@ case "$SERVICE" in
             echo "$AUTH_SECRETS" > "$TARGET_FILE"
             ;;
           *)
-          order-service) # should match to REPO name
+          order-service) # should match to service repo name
             echo "$ORDER_SECRETS" > "$TARGET_FILE"
             ;;
           *)
@@ -212,7 +211,7 @@ case "$SERVICE" in
 ```
 
 # Configure Ingress
-Add your service path to Nginix Ingress server. Make sure the Indentation is properly configured
+Add your service path to NGINX Ingress server. Make sure the Indentation is properly configured
 ```
 rules:
     - host: backend.stud-hub.me
