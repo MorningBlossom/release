@@ -15,6 +15,9 @@ on:
         required: true
         default: "latest"
 
+permissions:
+  contents: read
+
 jobs:
   deploy-tag:
     name: Rollout New Image Tag
