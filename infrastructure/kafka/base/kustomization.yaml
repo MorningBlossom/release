@@ -7,4 +7,3 @@ resources:
   - statefulset.yaml
   - kafka-ui-deployment.yaml
   - kafka-ui-service.yaml
-  - rbac.yaml
