@@ -199,7 +199,6 @@ case "$SERVICE" in
           auth-service)
             echo "$AUTH_SECRETS" > "$TARGET_FILE"
             ;;
-          *)
           order-service) # should match to service repo name
             echo "$ORDER_SECRETS" > "$TARGET_FILE"
             ;;
