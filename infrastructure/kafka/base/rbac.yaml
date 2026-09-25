@@ -1,0 +1,63 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kafka-cicd-deployer
+  namespace: kafka
+rules:
+  # Core resources
+  - apiGroups: [""]
+    resources:
+      - services
+      - persistentvolumeclaims
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  # StatefulSet / Deployment
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+      - statefulsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+  # Ingress
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kafka-cicd-deployer
+  namespace: kafka
+subjects:
+  - kind: ServiceAccount
+    name: cicd-deployer
+    namespace: production
+roleRef:
+  kind: Role
+  name: kafka-cicd-deployer
+  apiGroup: rbac.authorization.k8s.io
