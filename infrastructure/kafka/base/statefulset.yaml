@@ -18,9 +18,11 @@ spec:
         app: kafka
 
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: kafka
-          image: apache/kafka:latest
+          image: docker.io/apache/kafka:latest
 
           ports:
             - name: kafka
@@ -74,7 +76,7 @@ spec:
               value: "1"
 
             - name: KAFKA_LOG_DIRS
-              value: "/var/lib/kafka/data"
+              value: "/var/lib/kafka/data/kafka-logs"
 
             # ==========================
             # Topic configuration
