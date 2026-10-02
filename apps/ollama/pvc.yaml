@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-data
+  namespace: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  storageClassName: oci-bv
+
+  resources:
+    requests:
+      storage: 20Gi
