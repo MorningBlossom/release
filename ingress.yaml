@@ -30,3 +30,10 @@ spec:
                 name: auth-service
                 port:
                   number: 80
+          - path: /github/webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: ai-code-review
+                port:
+                  number: 80
