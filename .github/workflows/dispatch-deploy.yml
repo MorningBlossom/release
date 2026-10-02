@@ -26,6 +26,8 @@ jobs:
 
     env:
       AUTH_SERVICE_SECRETS: ${{ secrets.AUTH_SERVICE_SECRETS }}
+      AI_CODE_REVIEW_SECRETS: ${{ secrets.AI_CODE_REVIEW_SECRETS }}
+      AI_CODE_REVIEW_PRIVATE_KEY: ${{ secrets.AI_CODE_REVIEW_PRIVATE_KEY }}
 
     steps:
       - name: checkout repository

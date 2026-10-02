@@ -18,6 +18,7 @@ jobs:
         with:
           filters: |
             auth-service: 'apps/auth-service/**'
+            ai-code-review: 'apps/ai-code-review/**'
 
   deploy:
     needs: detect-changes
@@ -31,6 +32,8 @@ jobs:
 
     env:
       AUTH_SERVICE_SECRETS: ${{ secrets.AUTH_SERVICE_SECRETS }}
+      AI_CODE_REVIEW_SECRETS: ${{ secrets.AI_CODE_REVIEW_SECRETS }}
+      AI_CODE_REVIEW_PRIVATE_KEY: ${{ secrets.AI_CODE_REVIEW_PRIVATE_KEY }}
 
     steps:
       - name: checkout repository
@@ -47,6 +50,7 @@ jobs:
         with:
           filters: |
             auth-service: 'apps/auth-service/**'
+            ai-code-review: 'apps/ai-code-review/**'
 
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v3
